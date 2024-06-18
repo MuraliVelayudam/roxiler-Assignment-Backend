@@ -1,3 +1,4 @@
+import { months } from "../constants.js";
 import ProductModel from "./../model/productModel.js";
 
 // 1.An API to list the all transactions
@@ -10,10 +11,38 @@ export const transaction = async (req, res) => {
   //   Skip
   const skip = (page - 1) * limit;
 
+  //search text on product title / description / price;
+  const search = req.query.search || "";
+
+  //   Any month between January to December dateOfSale regardless of the year.
+  const monthInput = req.query.month || "january";
+
+  const month_num = months[monthInput.toLowerCase()];
+
   try {
-    const products = await ProductModel.find().skip(skip).limit(limit);
+    const products = await ProductModel.find({
+      $and: [
+        {
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+            { price: { $regex: search, $options: "i" } },
+          ],
+        },
+        {
+          $expr: {
+            $eq: [{ $substrBytes: ["$dateOfSale", 5, 2] }, month_num],
+          },
+        },
+      ],
+    })
+      .skip(skip)
+      .limit(limit);
     res.status(200).json({
       products,
+      skip,
+      page,
+      limit,
     });
   } catch (error) {
     console.error(error);
