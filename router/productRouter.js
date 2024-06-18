@@ -9,7 +9,7 @@ productRouter.get("/", (req, res) => {
 });
 
 // 1.An API to list the all transactions
-productRouter.get("/transaction", async (req, res) => {
+productRouter.get("/api/transaction", async (req, res) => {
   // pagination values will be like page = 1, per page = 10
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
