@@ -1,8 +1,12 @@
 import app from "./app.js";
+import { connectToDb } from "./config/db.js";
+import seedDataToDb from "./config/seedDataToDb.js";
 import { configuration } from "./config/config.js";
 
 const port = configuration.port;
 
-app.listen(port, () => {
+app.listen(port, async () => {
+  await connectToDb();
   console.log(`Server running on Port : ${port}`);
+  seedDataToDb();
 });
