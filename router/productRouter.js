@@ -137,7 +137,7 @@ productRouter.get("/api/statistics", async (req, res) => {
 });
 
 // 3. An API for bar---------------------------------------
-productRouter.get("/api/barchat", async (req, res) => {
+productRouter.get("/api/chart", async (req, res) => {
   // Month
   const monthInput = req.query.month || "january";
 
@@ -150,20 +150,9 @@ productRouter.get("/api/barchat", async (req, res) => {
     const barChartData = await ProductModel.aggregate([
       {
         $match: {
-          $and: [
-            {
-              $or: [
-                { title: { $regex: search, $options: "i" } },
-                { description: { $regex: search, $options: "i" } },
-                { price: { $regex: search, $options: "i" } },
-              ],
-            },
-            {
-              $expr: {
-                $eq: [{ $substrBytes: ["$dateOfSale", 5, 2] }, month_Num],
-              },
-            },
-          ],
+          $expr: {
+            $eq: [{ $substrBytes: ["$dateOfSale", 5, 2] }, month_Num],
+          },
         },
       },
       {
