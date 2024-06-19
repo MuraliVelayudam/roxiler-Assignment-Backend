@@ -226,7 +226,6 @@ productRouter.get("/api/pie", async (req, res) => {
       message: "successfully fetched data",
       success: true,
     });
-    console.log(pie);
   } catch (error) {
     console.log(error);
     res.status(500).json({
