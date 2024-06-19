@@ -12,7 +12,7 @@ productRouter.get("/", (req, res) => {
 productRouter.get("/api/transaction", async (req, res) => {
   // pagination values will be like page = 1, per page = 10
   const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 10;
+  const limit = Number(req.query.limit) || 100;
 
   //   Skip
   const skip = (page - 1) * limit;
