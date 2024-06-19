@@ -60,14 +60,14 @@ productRouter.get("/api/transaction", async (req, res) => {
   }
 });
 
-//2.An API for statistics--------------------------------------------------------------------------
+//2.An API for statistics------------------------------------------------------
 
 productRouter.get("/api/statistics", async (req, res) => {
   // search
   const search = req.query.search || "";
 
   //Month
-  const monthInput = req.query.month || "january";
+  const monthInput = req.query.month;
 
   const month_num = months[monthInput.toLowerCase()];
 
@@ -131,6 +131,72 @@ productRouter.get("/api/statistics", async (req, res) => {
     res.status(500).json({
       error,
       message: "Internal Error",
+      success: false,
+    });
+  }
+});
+
+// 3. An API for bar---------------------------------------
+productRouter.get("/api/barchat", async (req, res) => {
+  // Month
+  const monthInput = req.query.month || "january";
+
+  const month_Num = months[monthInput.toLowerCase()];
+
+  // Search
+  const search = req.query.search || "";
+
+  try {
+    const barChartData = await ProductModel.aggregate([
+      {
+        $match: {
+          $and: [
+            {
+              $or: [
+                { title: { $regex: search, $options: "i" } },
+                { description: { $regex: search, $options: "i" } },
+                { price: { $regex: search, $options: "i" } },
+              ],
+            },
+            {
+              $expr: {
+                $eq: [{ $substrBytes: ["$dateOfSale", 5, 2] }, month_Num],
+              },
+            },
+          ],
+        },
+      },
+      {
+        $bucket: {
+          groupBy: "$price",
+          boundaries: [
+            "0",
+            "101",
+            "201",
+            "301",
+            "401",
+            "501",
+            "601",
+            "701",
+            "801",
+            "901",
+          ],
+          default: "901-above",
+          output: { count: { $sum: 1 } },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      barChartData,
+      message: "Fetched Successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error,
+      message: "Internal Error ",
       success: false,
     });
   }
