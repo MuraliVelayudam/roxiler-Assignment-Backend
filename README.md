@@ -9,6 +9,17 @@ This repository contains a backend API for managing product transactions. The AP
 
 https://roxiler-assignment-backend-aq9d.onrender.com
 
+## Dependencies
+cors: ^2.8.5
+dotenv: ^16.4.5
+express: ^4.19.2
+mongodb: ^6.7.0
+mongoose: ^8.4.3
+morgan: ^1.10.0
+
+##Development Dependencies
+nodemon: ^3.1.3
+
 
 ## API Reference
 
