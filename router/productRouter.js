@@ -143,9 +143,6 @@ productRouter.get("/api/chart", async (req, res) => {
 
   const month_Num = months[monthInput.toLowerCase()];
 
-  // Search
-  const search = req.query.search || "";
-
   try {
     const barChartData = await ProductModel.aggregate([
       {
@@ -186,6 +183,55 @@ productRouter.get("/api/chart", async (req, res) => {
     res.status(500).json({
       error,
       message: "Internal Error ",
+      success: false,
+    });
+  }
+});
+
+// 4.An API for pie chart Find unique categories and number of items
+
+productRouter.get("/api/pie", async (req, res) => {
+  // Month
+
+  const monthInput = req.query.month || "january";
+
+  const month_Num = months[monthInput.toLowerCase()];
+
+  try {
+    const pie = await ProductModel.aggregate([
+      {
+        $match: {
+          $expr: {
+            $eq: [{ $substrBytes: ["$dateOfSale", 5, 2] }, month_Num],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$category",
+          itemCount: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          category: "$_id",
+          itemCount: 1,
+          _id: 0,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      pie,
+      message: "successfully fetched data",
+      success: true,
+    });
+    console.log(pie);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      error,
+      message: "Internal error",
       success: false,
     });
   }
